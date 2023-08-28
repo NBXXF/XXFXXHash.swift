@@ -15,7 +15,7 @@ let package = Package(
     targets: [
         .target(name: "xxHash",
                 dependencies: ["CxxHash"]),
-        .target(name: "CxxHash"),
+        .systemLibrary(name: "CxxHash"),
         .testTarget(name: "xxHashTests",
                     dependencies: ["xxHash"])
     ]

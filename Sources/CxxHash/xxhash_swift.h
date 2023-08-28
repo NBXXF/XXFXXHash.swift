@@ -21,6 +21,6 @@
 #define XXH_INLINE_ALL
 #define XXH_STATIC_LINKING_ONLY
 
-#include "../xxhash.h"
+#include "xxhash.h"
 
 #endif /* __xxhash_swift_h__ */

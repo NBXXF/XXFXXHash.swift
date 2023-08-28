@@ -14,8 +14,13 @@ Pod::Spec.new do |s|
   base_platforms     = { :ios => '11.0', :osx => '10.13', :tvos => '11.0' }
   s.platforms        = base_platforms.merge({ :watchos => '6.0' })
   
-  s.source_files = 'Sources/xxHash/**/*.swift', 'Sources/CxxHash/**/*.{h,c}'
-  s.public_header_files = 'Sources/CxxHash/include/*.h'
+  s.source_files = 'Sources/xxHash/**/*.swift'
+  
+  # CxxHash headers include
+  s.preserve_path = 'Sources/CxxHash'
+  s.pod_target_xcconfig = {
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) "${PODS_TARGET_SRCROOT}/Sources"'
+  }
   
   s.test_spec 'Tests' do |ts|
     ts.platforms = base_platforms
