@@ -8,40 +8,28 @@
 import Foundation
 import CxxHash
 
-public struct xxHash32 {
+public struct xxHash32: xxHash2Common {
     private var state: XXH_NAMESPACEXXH32_state_t
     
-    public init(seed: UInt32 = 0) throws {
+    public typealias Hash = UInt32
+    
+    public init(seed: UInt32) throws {
         self.state = .init()
         try self.reset(seed: seed)
     }
     
-    public mutating func reset(seed: UInt32 = 0) throws {
+    public mutating func reset(seed: UInt32) throws {
         guard XXH_INLINE_XXH32_reset(&state, seed) == XXH_NAMESPACEXXH_OK else {
             throw xxHashError()
         }
     }
     
-    public mutating func update(_ bytes: Data) throws {
-        let result = bytes.withUnsafeBytes { buf in
-            XXH_INLINE_XXH32_update(&state, buf.baseAddress, buf.count)
+    public mutating func update(_ buffer: UnsafeRawBufferPointer) throws {
+        guard XXH_INLINE_XXH32_update(&state, buffer.baseAddress,
+                                      buffer.count) == XXH_NAMESPACEXXH_OK else
+        {
+            throw xxHashError()
         }
-        guard result == XXH_NAMESPACEXXH_OK else { throw xxHashError() }
-    }
-    
-    public mutating func update(_ bytes: [UInt8]) throws {
-        let result = bytes.withUnsafeBytes { buf in
-            XXH_INLINE_XXH32_update(&state, buf.baseAddress, buf.count)
-        }
-        guard result == XXH_NAMESPACEXXH_OK else { throw xxHashError() }
-    }
-    
-    public mutating func update(_ utf8: String) throws {
-        var utf8 = utf8
-        let result = utf8.withUTF8 { buf in
-            XXH_INLINE_XXH32_update(&state, buf.baseAddress, buf.count)
-        }
-        guard result == XXH_NAMESPACEXXH_OK else { throw xxHashError() }
     }
     
     public func digest() -> UInt32 {
@@ -60,22 +48,8 @@ public struct xxHash32 {
         return XXH_INLINE_XXH32_hashFromCanonical(&canonical)
     }
     
-    public static func hash(_ bytes: Data, seed: UInt32 = 0) -> UInt32 {
-        bytes.withUnsafeBytes { buf in
-            XXH_INLINE_XXH32(buf.baseAddress, buf.count, seed)
-        }
-    }
-    
-    public static func hash(_ bytes: [UInt8], seed: UInt32 = 0) -> UInt32 {
-        bytes.withUnsafeBytes { buf in
-            XXH_INLINE_XXH32(buf.baseAddress, buf.count, seed)
-        }
-    }
-    
-    public static func hash(_ utf8: String, seed: UInt32 = 0) -> UInt32 {
-        var utf8 = utf8
-        return utf8.withUTF8 { buf in
-            XXH_INLINE_XXH32(buf.baseAddress, buf.count, seed)
-        }
+    @inlinable
+    public static func hash(_ buffer: UnsafeRawBufferPointer, seed: UInt32) -> UInt32 {
+        XXH_INLINE_XXH32(buffer.baseAddress, buffer.count, seed)
     }
 }

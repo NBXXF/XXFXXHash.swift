@@ -8,63 +8,44 @@
 import Foundation
 import CxxHash
 
-public final class xxHash3 {
+public final class xxHash3: xxHash3Common {
     private let state: OpaquePointer!
+    
+    public typealias Hash = UInt64
     
     public init(seed: UInt64? = nil, secret: Data? = nil) throws {
         self.state = XXH_INLINE_XXH3_createState()
         try self.reset(seed: seed, secret: secret)
     }
     
-    public func reset(seed: UInt64? = nil, secret: Data? = nil) throws {
+    public func reset(seed: UInt64? = nil, secretBuf: UnsafeRawBufferPointer? = nil) throws {
         let result = {
-            if let secret = secret, let seed = seed {
-                return secret.withUnsafeBytes { sec in
-                    XXH_INLINE_XXH3_64bits_reset_withSecretandSeed(state, sec.baseAddress,
-                                                                   sec.count, seed)
-                }
-            } else if let secret = secret {
-                return secret.withUnsafeBytes { sec in
-                    XXH_INLINE_XXH3_64bits_reset_withSecret(state, sec.baseAddress,
-                                                            sec.count)
-                }
+            if let sec = secretBuf, let seed = seed {
+                return XXH_INLINE_XXH3_64bits_reset_withSecretandSeed(state, sec.baseAddress,
+                                                                      sec.count, seed)
+            } else if let sec = secretBuf {
+                return XXH_INLINE_XXH3_64bits_reset_withSecret(state, sec.baseAddress,
+                                                               sec.count)
             } else if let seed = seed {
                 return XXH_INLINE_XXH3_64bits_reset_withSeed(state, seed)
             } else {
                 return XXH_INLINE_XXH3_64bits_reset(state)
             }
         }()
-        guard result == XXH_NAMESPACEXXH_OK else {
-            throw xxHashError()
-        }
-    }
-    
-    public func update(_ bytes: Data) throws {
-        let result = bytes.withUnsafeBytes { buffer in
-            XXH_INLINE_XXH3_64bits_update(state, buffer.baseAddress, buffer.count)
-        }
         guard result == XXH_NAMESPACEXXH_OK else { throw xxHashError() }
     }
     
-    public func update(_ bytes: [UInt8]) throws {
-        let result = bytes.withUnsafeBytes { buffer in
-            XXH_INLINE_XXH3_64bits_update(state, buffer.baseAddress, buffer.count)
-        }
-        guard result == XXH_NAMESPACEXXH_OK else { throw xxHashError() }
-    }
-    
-    public func update(_ utf8: String) throws {
-        var utf8 = utf8
-        let result = utf8.withUTF8 { buffer in
-            XXH_INLINE_XXH3_64bits_update(state, buffer.baseAddress, buffer.count)
-        }
-        guard result == XXH_NAMESPACEXXH_OK else { throw xxHashError() }
+    public func update(_ buffer: UnsafeRawBufferPointer) throws {
+        guard XXH_INLINE_XXH3_64bits_update(state, buffer.baseAddress,
+                                            buffer.count) == XXH_NAMESPACEXXH_OK else
+        { throw xxHashError() }
     }
     
     public func digest() -> UInt64 {
         XXH_INLINE_XXH3_64bits_digest(state)
     }
     
+    @inlinable
     public static func canonical(hash: UInt64) -> [UInt8] {
         var canonical = XXH_NAMESPACEXXH64_canonical_t()
         XXH_INLINE_XXH64_canonicalFromHash(&canonical, hash)
@@ -72,6 +53,7 @@ public final class xxHash3 {
                 canonical.digest.4, canonical.digest.5, canonical.digest.6, canonical.digest.7]
     }
     
+    @inlinable
     public static func hash(canonical hash: [UInt8]) throws -> UInt64 {
         guard hash.count == 8 else { throw xxHashError() }
         var canonical = XXH_NAMESPACEXXH64_canonical_t(
@@ -80,73 +62,21 @@ public final class xxHash3 {
         return XXH_INLINE_XXH64_hashFromCanonical(&canonical)
     }
     
-    public static func hash(_ bytes: Data, seed: UInt64? = nil,
-                            secret: Data? = nil) -> UInt64
+    @inlinable
+    public static func hash(_ buffer: UnsafeRawBufferPointer, seed: UInt64?,
+                            secretBuf: UnsafeRawBufferPointer?) -> UInt64
     {
-        bytes.withUnsafeBytes { buf in
-            if let seed = seed, let secret = secret {
-                return secret.withUnsafeBytes { sec in
-                    XXH_INLINE_XXH3_64bits_withSecretandSeed(buf.baseAddress, buf.count,
-                                                              sec.baseAddress, sec.count,
-                                                              seed)
-                }
-            } else if let secret = secret {
-                return secret.withUnsafeBytes { sec in
-                    XXH_INLINE_XXH3_64bits_withSecret(buf.baseAddress, buf.count,
-                                                      sec.baseAddress, sec.count)
-                }
-            } else if let seed = seed {
-                return XXH_INLINE_XXH3_64bits_withSeed(buf.baseAddress, buf.count, seed)
-            } else {
-                return XXH_INLINE_XXH3_64bits(buf.baseAddress, buf.count)
-            }
-        }
-    }
-    
-    public static func hash(_ bytes: [UInt8], seed: UInt64? = nil,
-                            secret: Data? = nil) -> UInt64
-    {
-        bytes.withUnsafeBytes { buf in
-            if let seed = seed, let secret = secret {
-                return secret.withUnsafeBytes { sec in
-                    XXH_INLINE_XXH3_64bits_withSecretandSeed(buf.baseAddress, buf.count,
-                                                             sec.baseAddress, sec.count,
-                                                             seed)
-                }
-            } else if let secret = secret {
-                return secret.withUnsafeBytes { sec in
-                    XXH_INLINE_XXH3_64bits_withSecret(buf.baseAddress, buf.count,
-                                                      sec.baseAddress, sec.count)
-                }
-            } else if let seed = seed {
-                return XXH_INLINE_XXH3_64bits_withSeed(buf.baseAddress, buf.count, seed)
-            } else {
-                return XXH_INLINE_XXH3_64bits(buf.baseAddress, buf.count)
-            }
-        }
-    }
-    
-    public static func hash(_ utf8: String, seed: UInt64? = nil,
-                            secret: Data? = nil) -> UInt64
-    {
-        var utf8 = utf8
-        return utf8.withUTF8 { buf in
-            if let seed = seed, let secret = secret {
-                return secret.withUnsafeBytes { sec in
-                    XXH_INLINE_XXH3_64bits_withSecretandSeed(buf.baseAddress, buf.count,
-                                                             sec.baseAddress, sec.count,
-                                                             seed)
-                }
-            } else if let secret = secret {
-                return secret.withUnsafeBytes { sec in
-                    XXH_INLINE_XXH3_64bits_withSecret(buf.baseAddress, buf.count,
-                                                      sec.baseAddress, sec.count)
-                }
-            } else if let seed = seed {
-                return XXH_INLINE_XXH3_64bits_withSeed(buf.baseAddress, buf.count, seed)
-            } else {
-                return XXH_INLINE_XXH3_64bits(buf.baseAddress, buf.count)
-            }
+        if let seed = seed, let sec = secretBuf {
+            return XXH_INLINE_XXH3_64bits_withSecretandSeed(buffer.baseAddress, buffer.count,
+                                                            sec.baseAddress, sec.count,
+                                                            seed)
+        } else if let sec = secretBuf {
+            return XXH_INLINE_XXH3_64bits_withSecret(buffer.baseAddress, buffer.count,
+                                                     sec.baseAddress, sec.count)
+        } else if let seed = seed {
+            return XXH_INLINE_XXH3_64bits_withSeed(buffer.baseAddress, buffer.count, seed)
+        } else {
+            return XXH_INLINE_XXH3_64bits(buffer.baseAddress, buffer.count)
         }
     }
     
