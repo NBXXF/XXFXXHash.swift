@@ -1,8 +1,7 @@
 //
-//  xxHash128.swift
-//  
+//  XXHash128.swift
 //
-//   on 28/08/2023.
+//
 //
 
 import Foundation

@@ -2,7 +2,6 @@
 //  xxhash_swift.h
 //  
 //
-//   on 28/08/2023.
 //
 
 #ifndef __xxhash_swift_h__
