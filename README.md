@@ -1,12 +1,4 @@
 # xxHash
-![🐧 linux: ready](https://img.shields.io/badge/%F0%9F%90%A7%20linux-ready-red.svg)
-[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-lightgrey.svg)](https://raw.githubusercontent.com/tesseract-one/xxHash.swift/main/LICENSE)
-[![Build Status](https://github.com/tesseract-one/xxHash.swift/workflows/Build%20%26%20Tests/badge.svg?branch=main)](https://github.com/tesseract-one/xxHash.swift/actions?query=workflow%3ABuild%20%26%20Tests+branch%3Amain)
-[![GitHub release](https://img.shields.io/github/release/tesseract-one/xxHash.swift.svg)](https://github.com/tesseract-one/xxHash.swift/releases)
-[![SPM compatible](https://img.shields.io/badge/SwiftPM-Compatible-brightgreen.svg)](https://swift.org/package-manager/)
-[![CocoaPods version](https://img.shields.io/cocoapods/v/xxHash.svg)](https://cocoapods.org/pods/xxHash)
-![Platform OS X | iOS | tvOS | watchOS | Linux](https://img.shields.io/badge/platform-Linux%20%7C%20OS%20X%20%7C%20iOS%20%7C%20tvOS%20%7C%20watchOS-orange.svg)
-
 ### Swift wrapper for [xxHash C library](https://github.com/Cyan4973/xxHash)
 
 Wrapped:

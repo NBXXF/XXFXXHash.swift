@@ -2,7 +2,7 @@
 //  Protocols.swift
 //  
 //
-//  Created by Yehor Popovych on 29/08/2023.
+//   on 29/08/2023.
 //
 
 import Foundation
