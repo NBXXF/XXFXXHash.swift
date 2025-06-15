@@ -8,15 +8,15 @@ let package = Package(
     platforms: [.macOS(.v10_13), .iOS(.v11), .tvOS(.v11), .watchOS(.v6)],
     products: [
         .library(
-            name: "xxHash",
-            targets: ["xxHash"])
+            name: "XXFXXHash",
+            targets: ["XXFXXHash"])
     ],
     dependencies: [],
     targets: [
-        .target(name: "xxHash",
-                dependencies: ["CxxHash"]),
-        .systemLibrary(name: "CxxHash"),
+        .target(name: "XXFXXHash",
+                dependencies: ["XXFCXXHash"]),
+        .systemLibrary(name: "XXFCXXHash"),
         .testTarget(name: "xxHashTests",
-                    dependencies: ["xxHash"])
+                    dependencies: ["XXFXXHash"])
     ]
 )

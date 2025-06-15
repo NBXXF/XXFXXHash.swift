@@ -1,4 +1,4 @@
-module CxxHash {
+module XXFCXXHash {
     umbrella header "xxhash_swift.h"
     export *
 }

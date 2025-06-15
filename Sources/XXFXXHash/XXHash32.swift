@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import CxxHash
+import XXFCXXHash
 
-public struct xxHash32: xxHash2Common {
+public struct XXHash32: xxHash2Common {
     private var state: XXH_NAMESPACEXXH32_state_t
     
     public typealias Hash = UInt32
@@ -20,7 +20,7 @@ public struct xxHash32: xxHash2Common {
     
     public mutating func reset(seed: UInt32) throws {
         guard XXH_INLINE_XXH32_reset(&state, seed) == XXH_NAMESPACEXXH_OK else {
-            throw xxHashError()
+            throw XXHashError()
         }
     }
     
@@ -28,7 +28,7 @@ public struct xxHash32: xxHash2Common {
         guard XXH_INLINE_XXH32_update(&state, buffer.baseAddress,
                                       buffer.count) == XXH_NAMESPACEXXH_OK else
         {
-            throw xxHashError()
+            throw XXHashError()
         }
     }
     
@@ -43,7 +43,7 @@ public struct xxHash32: xxHash2Common {
     }
     
     public static func hash(canonical hash: [UInt8]) throws -> UInt32 {
-        guard hash.count == 4 else { throw xxHashError() }
+        guard hash.count == 4 else { throw XXHashError() }
         var canonical = XXH_NAMESPACEXXH32_canonical_t(digest: (hash[0], hash[1], hash[2], hash[3]))
         return XXH_INLINE_XXH32_hashFromCanonical(&canonical)
     }

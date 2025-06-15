@@ -6,13 +6,13 @@
 //
 
 import Foundation
-import CxxHash
+import XXFCXXHash
 
-public struct xxHashError: Error {
+public struct XXHashError: Error {
     public init() {}
 }
 
-public protocol xxHashCommon {
+public protocol XXHashCommon {
     associatedtype Hash
     
     mutating func update(_ buffer: UnsafeRawBufferPointer) throws
@@ -23,7 +23,7 @@ public protocol xxHashCommon {
     static func hash(canonical hash: [UInt8]) throws -> Hash
 }
 
-public extension xxHashCommon {
+public extension XXHashCommon {
     @inlinable
     mutating func update(_ bytes: Data) throws {
         try bytes.withUnsafeBytes { try update($0) }
@@ -41,7 +41,7 @@ public extension xxHashCommon {
     }
 }
 
-public protocol xxHash2Common: xxHashCommon where Hash: UnsignedInteger & FixedWidthInteger {
+public protocol xxHash2Common: XXHashCommon where Hash: UnsignedInteger & FixedWidthInteger {
     init(seed: Hash) throws
     mutating func reset(seed: Hash) throws
     static func hash(_ buffer: UnsafeRawBufferPointer, seed: Hash) -> Hash
@@ -71,7 +71,7 @@ public extension xxHash2Common {
     }
 }
 
-public protocol xxHash3Common: xxHashCommon {
+public protocol xxHash3Common: XXHashCommon {
     init(seed: UInt64?, secret: Data?) throws
     func reset(seed: UInt64?, secretBuf: UnsafeRawBufferPointer?) throws
     static func hash(_ buffer: UnsafeRawBufferPointer, seed: UInt64?, secretBuf: UnsafeRawBufferPointer?) -> Hash
@@ -143,7 +143,7 @@ public extension xxHash3Common {
         var secret = Data(repeating: 0, count: size)
         guard XXH_INLINE_XXH3_generateSecret(
             &secret, size, seed.baseAddress, seed.count
-        ) == XXH_NAMESPACEXXH_OK else { throw xxHashError() }
+        ) == XXH_NAMESPACEXXH_OK else { throw XXHashError() }
         return secret
     }
     

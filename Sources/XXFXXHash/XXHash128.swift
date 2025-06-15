@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import CxxHash
+import XXFCXXHash
 
-public final class xxHash128: xxHash3Common {
+public final class XXHash128: xxHash3Common {
     private let state: OpaquePointer!
     
     public typealias Hash = (low: UInt64, high: UInt64)
@@ -32,13 +32,13 @@ public final class xxHash128: xxHash3Common {
                 return XXH_INLINE_XXH3_128bits_reset(state)
             }
         }()
-        guard result == XXH_NAMESPACEXXH_OK else { throw xxHashError() }
+        guard result == XXH_NAMESPACEXXH_OK else { throw XXHashError() }
     }
     
     public func update(_ buffer: UnsafeRawBufferPointer) throws {
         guard XXH_INLINE_XXH3_128bits_update(state, buffer.baseAddress,
                                              buffer.count) == XXH_NAMESPACEXXH_OK else
-        { throw xxHashError() }
+        { throw XXHashError() }
     }
     
     public func digest() -> (low: UInt64, high: UInt64) {
@@ -56,7 +56,7 @@ public final class xxHash128: xxHash3Common {
     }
     
     public static func hash(canonical hash: [UInt8]) throws -> (low: UInt64, high: UInt64) {
-        guard hash.count == 16 else { throw xxHashError() }
+        guard hash.count == 16 else { throw XXHashError() }
         var canonical = XXH_NAMESPACEXXH128_canonical_t(
             digest: (hash[0], hash[1], hash[2], hash[3], hash[4], hash[5], hash[6], hash[7],
                      hash[8], hash[9], hash[10], hash[11], hash[12], hash[13], hash[14], hash[15])
